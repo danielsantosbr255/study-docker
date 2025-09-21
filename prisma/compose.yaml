@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - main
+
+  migrate:
+    build:
+      context: ./backend
+      target: builder
+    env_file: ./.env
+    depends_on:
+      - postgres
+    command: npx prisma migrate deploy
+    networks:
+      - main
+    restart: no
+
+  backend:
+    build:
+      context: ./backend
+      target: runner
+    env_file: ./.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - migrate
+    restart: unless-stopped
+    networks:
+      - main
+
+volumes:
+  postgres:
+
+networks:
+  main:
