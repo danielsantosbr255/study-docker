@@ -4,7 +4,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+.pnpm*
 yarn.lock
+generated
+.pnpm*
 
 # TypeScript
 dist/

@@ -1,0 +1,10 @@
+services:
+  backend-prod:
+    build:
+      context: ./backend
+      target: prod
+    image: genesis:prod
+    env_file:
+      - .env
+    ports:
+      - 3001:3000
